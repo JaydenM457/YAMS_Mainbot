@@ -145,7 +145,7 @@ public class RobotContainer
     autChooser.addOption("Aim at Target Command", aimAtTargetAutoCommand);
     autChooser.addOption("Drive to AprilTag", driveToTargetCommand);
     autChooser.addOption("Test_One PathPlanner Command", drivebase.getAutonomousCommand("Test_One"));
-    autChooser.addOption("Aim at Best With Any Target IDs", drivebase.aimAtNearestTag(Cameras.LEFT_CAM, 
+    autChooser.addOption("Aim at Nearest Side Hub Tag", drivebase.aimAtNearestTag(Cameras.LEFT_CAM, 
         new int[]{DrivebaseConstants.blueHubLeftTagID,
           DrivebaseConstants.blueHubRightTagID,
           DrivebaseConstants.redHubLeftTagID,
