@@ -147,10 +147,10 @@ public class RobotContainer
     autChooser.addOption("Drive to AprilTag", driveToTargetCommand);
     // autChooser.addOption("Test_One PathPlanner Command", drivebase.getAutonomousCommand("Test_One"));
     autChooser.addOption("Aim at Side of Hub and Shoot", new ParallelCommandGroup(drivebase.aimAtNearestTag(Cameras.LEFT_CAM, 
-        new int[]{DrivebaseConstants.blueZoneHubLeftTagID,
-          DrivebaseConstants.blueZoneHubRightTagID,
-          DrivebaseConstants.redZoneHubLeftTagID,
-          DrivebaseConstants.redZoneHubRightTagID,
+        new int[]{Constants.blueZoneHubLeftTagID,
+          Constants.blueZoneHubRightTagID,
+          Constants.redZoneHubLeftTagID,
+          Constants.redZoneHubRightTagID,
         }
       ), m_fuelSystem.shoot())
       .withTimeout(5));
@@ -233,20 +233,20 @@ public class RobotContainer
       
       // Aim at the nearest AprilTag on the side of a hub
       driverController.R3().whileTrue(drivebase.aimAtNearestTag(Cameras.LEFT_CAM, 
-        new int[]{DrivebaseConstants.blueZoneHubLeftTagID,
-          DrivebaseConstants.blueZoneHubRightTagID,
-          DrivebaseConstants.redZoneHubLeftTagID,
-          DrivebaseConstants.redZoneHubRightTagID,
+        new int[]{Constants.blueZoneHubLeftTagID,
+          Constants.blueZoneHubRightTagID,
+          Constants.redZoneHubLeftTagID,
+          Constants.redZoneHubRightTagID,
         }
       ));
 
       // Aim and shoot from the side of a hub
       // driverController.R3().whileTrue(
       //   new ParallelCommandGroup(drivebase.aimAtNearestTag(Cameras.LEFT_CAM, 
-      //   new int[]{DrivebaseConstants.blueZoneHubLeftTagID,
-      //     DrivebaseConstants.blueZoneHubRightTagID,
-      //     DrivebaseConstants.redZoneHubLeftTagID,
-      //     DrivebaseConstants.redZoneHubRightTagID,
+      //   new int[]{Constants.blueZoneHubLeftTagID,
+      //     Constants.blueZoneHubRightTagID,
+      //     Constants.redZoneHubLeftTagID,
+      //     Constants.redZoneHubRightTagID,
       //   }
       // ), m_fuelSystem.shoot()));
 

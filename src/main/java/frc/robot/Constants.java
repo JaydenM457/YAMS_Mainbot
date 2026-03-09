@@ -25,6 +25,25 @@ public final class Constants
   public static final double MAX_SPEED  = Units.feetToMeters(13.5);
   // Maximum speed of the robot in meters per second, used to limit acceleration.
 
+  // AprilTag IDs for Aiming at Hub
+  // The "right" or "left" of the hub is from the perspective of the blue or red alliance's zone.
+  
+  // These are the IDs of the AprilTags on the sides of the hubs (closest to the robot).
+  public static final int blueZoneHubRightTagID = 27;
+  public static final int blueZoneHubLeftTagID = 24;
+  public static final int redZoneHubRightTagID = 11;
+  public static final int redZoneHubLeftTagID = 8;
+
+  // These are the IDs of the AprilTags directly in the center of the hub in the blue or red alliance's zone (not in the neutral zone).
+  public static final int blueZoneHubCenterTagID = 26;
+  public static final int blueZoneHubCenterLeftTagID = 25;
+  public static final int redZoneHubCenterTagID = 10;
+  public static final int redZoneHubCenterLeftTagID = 9;
+
+  public static final int blueZoneOutpostCenterTagID = 29;
+  public static final int redZoneOutpostCenterTagID = 13;
+
+
  public static final class AutonConstants
  {
 

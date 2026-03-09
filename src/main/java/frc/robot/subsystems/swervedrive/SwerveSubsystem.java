@@ -318,33 +318,33 @@ public class SwerveSubsystem extends SubsystemBase
           return;
         }
 
-        findBestWithAnyTargetIDs:
         for (PhotonTrackedTarget target: bestTargets) {
           if (target != null) {
             for (int aprilTagID: aprilTagIDs) {
               if (target.getFiducialId() == aprilTagID) {
                 nearestDesiredTarget = target;
-                break findBestWithAnyTargetIDs; // Breaks out of the nested loop
+
+                PIDController pid = new PIDController(1, 0, 0);
+
+                double pidCalculation = pid.calculate(swerveDrive.getYaw().getDegrees(), nearestDesiredTarget.getYaw());
+                
+                double turnAngle = -1 * pidCalculation;
+
+                SmartDashboard.putNumber("Aiming at AprilTag", nearestDesiredTarget.getFiducialId());
+
+                drive(getTargetSpeeds(0,
+                                    0,
+                                    Rotation2d.fromDegrees(turnAngle)));
+                
+                pid.close();
+
+                return;
               }
             }
           }
         }
 
-        if (nearestDesiredTarget != null) {
-          PIDController pid = new PIDController(1, 0, 0);
-
-          double pidCalculation = pid.calculate(swerveDrive.getYaw().getDegrees(), nearestDesiredTarget.getYaw());
-          
-          double turnAngle = -1 * pidCalculation;
-
-          SmartDashboard.putNumber("Aiming at AprilTag", nearestDesiredTarget.getFiducialId());
-
-          drive(getTargetSpeeds(0,
-                              0,
-                              Rotation2d.fromDegrees(turnAngle)));
-        }
-        else {
-
+        if (nearestDesiredTarget == null) {
           drive(getTargetSpeeds(0,
                               0,
                               Rotation2d.fromDegrees(0)));
