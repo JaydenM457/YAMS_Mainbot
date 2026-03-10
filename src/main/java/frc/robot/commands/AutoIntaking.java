@@ -5,27 +5,35 @@ import static edu.wpi.first.units.Units.RPM;
 import java.util.function.Supplier;
 
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.IndexerSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.Constants.COMMAND_TRAIN_CONSTANTS;
+import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.HopperSubsytem;
 
-public class ShootCommand extends Command
+public class AutoIntaking extends Command
 {
 
     private ShooterSubsystem shooter;
-    private IndexerSubsystem indexer;
+    private IntakeSubsystem intake;
     private HopperSubsytem Hopper;
-    private Supplier<AngularVelocity> setpoint;
+    private ArmSubsystem arm;
+    //private Timer timer = new Timer();
+    private double duration;
     
 
-    public ShootCommand(Supplier<AngularVelocity> shootSpeed, ShooterSubsystem shooter, IndexerSubsystem indexer, HopperSubsytem Hopper)
+    public AutoIntaking(ArmSubsystem arm,  IntakeSubsystem intake, HopperSubsytem Hopper)// double durationSeconds)
     {
-        this.shooter = shooter;
-        this.indexer = indexer;
+        //this.shooter = shooter;
+        this.intake = intake;
         this.Hopper = Hopper;
-        setpoint = shootSpeed;
-        addRequirements(shooter, indexer, Hopper);
+        this.arm = arm;
+        //setpoint = shootSpeed;
+        //this.duration =durationSeconds;
+        addRequirements(arm, intake, Hopper);
     }
     
     
@@ -35,7 +43,12 @@ public class ShootCommand extends Command
   @Override
   public void initialize()
   {
-    shooter.setMechanismVelocitySetpoint(setpoint.get());
+    arm.setAngleAndStop(COMMAND_TRAIN_CONSTANTS.DOWN_ANGLE);
+    intake.setduty(1);
+    Hopper.setduty(1);
+
+        // timer.reset();
+        // timer.start();
   }
 
   /**
@@ -45,15 +58,7 @@ public class ShootCommand extends Command
   @Override
   public void execute()
   {
-    shooter.setMechanismVelocitySetpoint(setpoint.get());
-    if (shooter.getVelocity().in(RPM) >= setpoint.get().in(RPM) * 0.95)
-    {
-        indexer.setduty(-1);
-        Hopper.setduty(-1);
-    }else{
-        indexer.setduty(0);
-        Hopper.setduty(0);
-    }
+
   }
 
   /**
@@ -85,6 +90,9 @@ public class ShootCommand extends Command
   @Override
   public void end(boolean interrupted)
   {
-    shooter.setduty(0);
+    //shooter.setMechanismVelocitySetpoint(RPM.of(0));
+    //shooter.set(0);
+    //intake.setduty(0);
+    //Hopper.setduty(0);
   }
 }

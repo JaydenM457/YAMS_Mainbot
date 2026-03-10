@@ -7,7 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Left Start to Pickup A(1)"
+            "pathName": "Start to Intake (C1)"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Intaking (C2)"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Intaking to Shoot(C3)"
           }
         },
         {
@@ -19,25 +31,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Pickup to Shoot A(2)"
+            "pathName": "Shoot to Dump(C4)"
           }
         },
         {
-          "type": "named",
+          "type": "wait",
           "data": {
-            "name": "Shoot"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Shoot to pickup 2 A(3)"
+            "waitTime": 3.0
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Pickup 2 to shoot A(4)"
+            "pathName": "Dump to Shoot(C5)"
           }
         },
         {

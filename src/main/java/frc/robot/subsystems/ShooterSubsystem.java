@@ -33,9 +33,9 @@ public class ShooterSubsystem extends SubsystemBase {
 
   private SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(this)
   .withControlMode(ControlMode.CLOSED_LOOP)
-  .withClosedLoopController(0, 0, 0.)
-  .withSimClosedLoopController(0.06, 0, 0)
-  .withFeedforward(new SimpleMotorFeedforward(0.15, 0.105, 0))
+  .withClosedLoopController(SHOOTER_CONSTANTS.kP, SHOOTER_CONSTANTS.kI, SHOOTER_CONSTANTS.kD)
+  //.withSimClosedLoopController(0, 0, 0)
+  .withFeedforward(new SimpleMotorFeedforward(SHOOTER_CONSTANTS.kS, SHOOTER_CONSTANTS.kV, SHOOTER_CONSTANTS.kA))
   //.withSimFeedforward(new SimpleMotorFeedforward(0, 0, 0))
   .withTelemetry("ShooterMotor", TelemetryVerbosity.HIGH)
   .withGearing(new MechanismGearing(GearBox.fromReductionStages(1,1)))
@@ -49,7 +49,7 @@ public class ShooterSubsystem extends SubsystemBase {
  private final FlyWheelConfig shooterConfig = new FlyWheelConfig(sparkSmartMotorController)
   .withDiameter(Inches.of(2))
   .withMass(Pounds.of(1))
-  .withUpperSoftLimit(RPM.of(6500))
+  .withUpperSoftLimit(SHOOTER_CONSTANTS.LOWER_SOFT_LIMIT)
   .withTelemetry("ShooterMech", TelemetryVerbosity.HIGH);
 
   private FlyWheel shooter = new FlyWheel(shooterConfig);
