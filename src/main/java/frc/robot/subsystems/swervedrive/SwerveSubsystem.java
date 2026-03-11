@@ -254,7 +254,10 @@ public class SwerveSubsystem extends SubsystemBase
         SmartDashboard.putBoolean("AprilTag " + targetID + " in Field of View:", desiredTarget != null);
 
         if (result.hasTargets() && desiredTarget != null) {
-          PIDController pid = new PIDController(1, 0, 0);
+          PIDController pid = new PIDController(
+                  Constants.aprilTagAimingPID_kP,
+                  Constants.aprilTagAimingPID_kI, 
+                  Constants.aprilTagAimingPID_kD);
 
           double pidCalculation = pid.calculate(swerveDrive.getYaw().getDegrees(), desiredTarget.getYaw());
           
@@ -265,6 +268,8 @@ public class SwerveSubsystem extends SubsystemBase
           drive(getTargetSpeeds(0,
                               0,
                               Rotation2d.fromDegrees(turnAngle)));
+          
+          pid.close();
         }
         else {
           drive(getTargetSpeeds(0,
@@ -324,7 +329,10 @@ public class SwerveSubsystem extends SubsystemBase
               if (target.getFiducialId() == aprilTagID) {
                 nearestDesiredTarget = target;
 
-                PIDController pid = new PIDController(1, 0, 0);
+                PIDController pid = new PIDController(
+                  Constants.aprilTagAimingPID_kP,
+                  Constants.aprilTagAimingPID_kI, 
+                  Constants.aprilTagAimingPID_kD);
 
                 double pidCalculation = pid.calculate(swerveDrive.getYaw().getDegrees(), nearestDesiredTarget.getYaw());
                 
