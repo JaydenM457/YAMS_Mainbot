@@ -31,6 +31,7 @@ import frc.robot.commands.AutoCommands;
 //import frc.robot.commands.AutoCommands;
 //import frc.robot.commands.AutoIntaking;
 import frc.robot.commands.AutoShoot;
+import frc.robot.commands.ShootIntoHub;
 import frc.robot.commands.CommandTrain;
 import frc.robot.commands.ShootCommand;
 //import frc.robot.subsystems.ArmSubsystem;
@@ -216,8 +217,15 @@ public class RobotContainer
     autChooser.addOption("Aim at Target Command", aimAtTargetAutoCommand);
     autChooser.addOption("Drive to AprilTag", driveToTargetCommand);
     // autChooser.addOption("Test_One PathPlanner Command", drivebase.getAutonomousCommand("Test_One"));
-    autChooser.addOption("Aim at Hub and Shoot", new ParallelCommandGroup(aimAtHubCommand, new AutoShoot(()->RPM.of(2500), 
-                                      m_shooter, m_indexer, m_Hopper, 3, armOscillateCommand))
+    autChooser.addOption("Aim at Hub and Shoot", new ParallelCommandGroup(aimAtHubCommand, new ShootIntoHub(Cameras.LEFT_CAM, new int[]{Constants.blueZoneHubLeftTagID,
+          Constants.blueZoneHubRightTagID,
+          Constants.redZoneHubLeftTagID,
+          Constants.redZoneHubRightTagID,
+          Constants.blueZoneHubCenterTagID,
+          Constants.redZoneHubCenterTagID,
+          Constants.blueZoneHubCenterLeftTagID,
+          Constants.redZoneHubCenterLeftTagID
+        }, m_shooter, m_indexer, m_Hopper, drivebase, armOscillateCommand))
       .withTimeout(5));
 
     // autChooser.addOption("Scoring Position Path", drivebase.getAutonomousCommand("ScoringPosition"));
