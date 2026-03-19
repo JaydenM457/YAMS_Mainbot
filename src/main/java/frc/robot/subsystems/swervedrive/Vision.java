@@ -22,6 +22,7 @@ import edu.wpi.first.networktables.NetworkTablesJNI;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import java.awt.Desktop;
 import java.io.IOException;
@@ -552,6 +553,35 @@ public class Vision
       }
     return null;
     }
+
+    public void displayDistanceToNearestHubAprilTag(Vision vision, int[] hubAprilTagIDs) {
+      Optional<PhotonPipelineResult> resultO = LEFT_CAM.getBestResult();
+      
+      if (resultO.isPresent())
+      {
+        var result = resultO.get();
+
+        ArrayList<PhotonTrackedTarget> closestTargets = LEFT_CAM.getClosestTargets(result); // Returns the top three closest targets or null if not found
+
+        if (closestTargets == null) {
+          return;
+        }
+
+        for (PhotonTrackedTarget target: closestTargets) {
+          if (target != null) {
+            for (int aprilTagID: hubAprilTagIDs) {
+              if (target.getFiducialId() == aprilTagID) {
+                SmartDashboard.putNumber("Distance from Hub:", vision.getDistanceFromAprilTag(aprilTagID));
+                return;
+              }
+            }
+          }
+        }
+        SmartDashboard.putNumber("Distance from Hub:", -1);
+      }
+    }
+
+
     /**
      * Get the latest result from the current cache.
      *

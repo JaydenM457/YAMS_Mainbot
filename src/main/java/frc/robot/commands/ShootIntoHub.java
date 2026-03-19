@@ -35,6 +35,10 @@ public class ShootIntoHub extends Command
     private int[] hubAprilTagIDs;
     private int closestHubAprilTagID = -1;
 
+    /* Interpolating Double Tree Map
+    For each entry, the first value (k) represents the distance in meters from the hub and the second value (v) represents the RPM needed
+    to accurately shoot into the hub at that distance.
+    */
     private InterpolatingDoubleTreeMap interpolatingMap = new InterpolatingDoubleTreeMap().ofEntries(
       Map.entry(2.2, 3000.0),
       Map.entry(2.5, 3300.0),
@@ -98,7 +102,7 @@ public class ShootIntoHub extends Command
             for (int aprilTagID: hubAprilTagIDs) {
               if (target.getFiducialId() == aprilTagID) {
                 closestHubAprilTagID = target.getFiducialId();
-                System.out.println("found closest tag");
+
                 return;
               }
             }
@@ -122,8 +126,6 @@ public class ShootIntoHub extends Command
             if (target.getFiducialId() == closestHubAprilTagID) {
               double distanceToHubAprilTag = swerveDrive.getVision().getDistanceFromAprilTag(target.getFiducialId());
               rotationsSetpoint = RPM.of(interpolatingMap.get(distanceToHubAprilTag));
-
-              SmartDashboard.putNumber("Distance from Hub:", distanceToHubAprilTag);
 
               shooter.setMechanismVelocitySetpoint(rotationsSetpoint);
 
