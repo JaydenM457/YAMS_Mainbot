@@ -135,7 +135,7 @@ public class Vision
    */
   public void updatePoseEstimation(SwerveDrive swerveDrive)
   {
-    if (SwerveDriveTelemetry.isSimulation && swerveDrive.getSimulationDriveTrainPose().isPresent())
+    if (SwerveDriveTelemetry.isSimulation && swerveDrive.getSimulationDriveTrainPose().isPresent()) {
     
       /*
        * In the maple-sim, odometry is simulated using encoder values, accounting for factors like skidding and drifting.
@@ -145,6 +145,7 @@ public class Vision
        * Therefore, we must ensure that the actual robot pose is provided in the simulator when updating the vision simulation during the simulation.
        */
       visionSim.update(swerveDrive.getSimulationDriveTrainPose().get());
+    }
     
     for (Cameras camera : Cameras.values())
     {
@@ -452,7 +453,8 @@ public class Vision
       poseEstimator = new PhotonPoseEstimator(Vision.fieldLayout,
                                               robotToCamTransform);
       poseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
-
+      poseEstimator.setFieldTags(Vision.fieldLayout);
+      
       this.singleTagStdDevs = singleTagStdDevs;
       this.multiTagStdDevs = multiTagStdDevsMatrix;
 
@@ -626,7 +628,7 @@ public class Vision
         });
         if (!resultsList.isEmpty())
         {
-          // updateEstimatedGlobalPose();
+          updateEstimatedGlobalPose();
 
         }
       }
@@ -647,7 +649,12 @@ public class Vision
       Optional<EstimatedRobotPose> visionEst = Optional.empty();
       for (var change : resultsList)
       {
-        visionEst = poseEstimator.update(change);
+        visionEst = poseEstimator.estimateCoprocMultiTagPose(change);
+
+        if (visionEst.isEmpty()) {
+          visionEst = poseEstimator.estimateLowestAmbiguityPose(change);
+        }
+
         updateEstimationStdDevs(visionEst, change.getTargets());
       }
       estimatedRobotPose = visionEst;
