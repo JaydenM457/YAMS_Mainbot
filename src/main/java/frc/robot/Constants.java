@@ -8,6 +8,7 @@ import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Rotations;
 
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
@@ -24,6 +25,9 @@ import swervelib.math.Matter;
  */
 public final class Constants
 {
+  public static double estimateNoteSpeedMps(double shooterRPM) {
+  return 3.25 + 0.00205 * shooterRPM;
+}
 
   public static final double ROBOT_MASS = (148 - 20.3) * 0.453592; // 32lbs * kg per pound
   public static final Matter CHASSIS    = new Matter(new Translation3d(0, 0, Units.inchesToMeters(8)), ROBOT_MASS);
@@ -36,22 +40,90 @@ public final class Constants
   
   // These are the IDs of the AprilTags on the sides of the hubs (closest to the robot).
   public static final int blueZoneHubRightTagID = 27;
-  public static final int blueZoneHubLeftTagID = 24;
-  public static final int redZoneHubRightTagID = 11;
-  public static final int redZoneHubLeftTagID = 8;
+  public static final Translation2d hubCenterTranslationBlueRight =
+    new Translation2d(0.39793333, -0.5969); // example only, replace with actual hub center
 
+  public static final int blueZoneHubLeftTagID = 24;
+  public static final Translation2d hubCenterTranslationBlueLeft =
+    new Translation2d(0.39793333, -0.5969); // example only, replace with actual hub center
+
+  public static final int redZoneHubRightTagID = 11;
+  public static final Translation2d hubCenterTranslationRedRight =
+    new Translation2d(0.39793333, -0.5969); // example only, replace with actual hub center
+
+  public static final int redZoneHubLeftTagID = 8;
+  public static final Translation2d hubCenterTranslationRedLeft =
+    new Translation2d(0.39793333, -0.5969); // example only, replace with actual hub center
+
+
+  
+
+public static final double noteEffectiveSpeedMps = 9.5; // tune on robot
   // These are the IDs of the AprilTags directly in the center of the hub in the blue or red alliance's zone (not in the neutral zone).
   public static final int blueZoneHubCenterTagID = 26;
+  public static final Translation2d hubCenterTranslationBlueCenter =
+    new Translation2d(0, -0.5969); // example only, replace with actual hub center
+
   public static final int blueZoneHubCenterLeftTagID = 25;
+  public static final Translation2d hubCenterTranslationBlueCenterLeft =
+    new Translation2d(0.39793333, -0.5969); // example only, replace with actual hub center
+
   public static final int redZoneHubCenterTagID = 10;
+  public static final Translation2d hubCenterTranslationRedCenter =
+    new Translation2d(0, -0.5969); // example only, replace with actual hub center
+
   public static final int redZoneHubCenterLeftTagID = 9;
+  public static final Translation2d hubCenterTranslationRedCenterLeft =
+    new Translation2d(0.39793333, -0.5969); // example only, replace with actual hub center
+
 
   public static final int blueZoneOutpostCenterTagID = 29;
   public static final int redZoneOutpostCenterTagID = 13;
-
+ 
   public static final double aprilTagAimingPID_kP = 1.0;
   public static final double aprilTagAimingPID_kI = 0.0;
   public static final double aprilTagAimingPID_kD = 0.0;
+
+  public static final int[] HUB_TAG_IDS = {
+  blueZoneHubRightTagID,
+  blueZoneHubLeftTagID,
+  redZoneHubRightTagID,
+  redZoneHubLeftTagID,
+  blueZoneHubCenterTagID,
+  blueZoneHubCenterLeftTagID,
+  redZoneHubCenterTagID,
+  redZoneHubCenterLeftTagID
+};
+
+public static final double SHOT_POSE_PREDICTION_SECS = 0.08;
+public static final double SHOT_MEASURED_VELOCITY_WEIGHT = 0.65;
+public static final double SHOOTER_READY_FRACTION = 0.97;
+public static final double HUB_HEADING_TOLERANCE_DEG_WITH_VISION = 1.25;
+public static final double HUB_HEADING_TOLERANCE_DEG_NO_VISION = 2.25;
+
+
+  public static final Translation2d getHubCenterOffsetFromTag(int tagId) {
+  switch (tagId) {
+    case blueZoneHubRightTagID:
+      return hubCenterTranslationBlueRight;
+    case blueZoneHubLeftTagID:
+      return hubCenterTranslationBlueLeft;
+    case redZoneHubRightTagID:
+      return hubCenterTranslationRedRight;
+    case redZoneHubLeftTagID:
+      return hubCenterTranslationRedLeft;
+    case blueZoneHubCenterTagID:
+      return hubCenterTranslationBlueCenter;
+    case blueZoneHubCenterLeftTagID:
+      return hubCenterTranslationBlueCenterLeft;
+    case redZoneHubCenterTagID:
+      return hubCenterTranslationRedCenter;
+    case redZoneHubCenterLeftTagID:
+      return hubCenterTranslationRedCenterLeft;
+    default:
+      throw new IllegalArgumentException("Unknown hub tag ID: " + tagId);
+  }
+}
 
 
  public static final class AutonConstants

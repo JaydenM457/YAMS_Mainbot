@@ -14,6 +14,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
@@ -249,6 +250,8 @@ public class Vision
     return tag.map(pose3d -> PhotonUtils.getDistanceToPose(currentPose.get(), pose3d.toPose2d())).orElse(-1.0);
   }
 
+  
+
   /**
    * Get tracked target from a camera of AprilTagID
    *
@@ -285,7 +288,83 @@ public class Vision
   {
     return visionSim;
   }
+  public Optional<Integer> getBestVisibleHubTag(int[] hubTagIds) {
+  for (Cameras cam : Cameras.values()) {
+    cam.getEstimatedGlobalPose();
+    Optional<PhotonPipelineResult> resultOpt = cam.getLatestResult();
 
+    if (resultOpt.isEmpty()) {
+      continue;
+    }
+
+    PhotonPipelineResult result = resultOpt.get();
+    if (!result.hasTargets()) {
+      continue;
+    }
+    
+
+    for (PhotonTrackedTarget target : result.getTargets()) {
+      int id = target.getFiducialId();
+      for (int hubId : hubTagIds) {
+        if (id == hubId) {
+          return Optional.of(id);
+        }
+      }
+    }
+  }
+
+  return Optional.empty();
+}
+
+  public Optional<Translation2d> getHubCenterFieldPosition(int tagId) {
+  Optional<Pose2d> tagPoseOpt = getTagPose2d(tagId);
+  if (tagPoseOpt.isEmpty()) {
+    return Optional.empty();
+  }
+
+  Pose2d tagPose = tagPoseOpt.get();
+  Translation2d offset = frc.robot.Constants.getHubCenterOffsetFromTag(tagId);
+
+  return Optional.of(
+      tagPose.getTranslation().plus(offset.rotateBy(tagPose.getRotation())));
+}
+
+public Optional<Pose2d> getTagPose2d(int tagId) {
+  return fieldLayout.getTagPose(tagId).map(Pose3d::toPose2d);
+}
+public Optional<Translation2d> getHubCenterFieldPositionFromTag(int tagId) {
+  Optional<Pose2d> tagPoseOpt = getTagPose2d(tagId);
+  if (tagPoseOpt.isEmpty()) {
+    return Optional.empty();
+  }
+
+  Pose2d tagPose = tagPoseOpt.get();
+  Translation2d tagToHub = frc.robot.Constants.getHubCenterOffsetFromTag(tagId);
+
+  return Optional.of(
+      tagPose.getTranslation().plus(tagToHub.rotateBy(tagPose.getRotation())));
+}
+public Optional<Translation2d> getHubCenterFieldPositionFromLayout(int[] hubTagIds) {
+  ArrayList<Translation2d> centers = new ArrayList<>();
+
+  for (int tagId : hubTagIds) {
+    getHubCenterFieldPositionFromTag(tagId).ifPresent(centers::add);
+  }
+
+  if (centers.isEmpty()) {
+    return Optional.empty();
+  }
+
+  double avgX = 0.0;
+  double avgY = 0.0;
+
+  for (Translation2d t : centers) {
+    avgX += t.getX();
+    avgY += t.getY();
+  }
+
+  return Optional.of(new Translation2d(avgX / centers.size(), avgY / centers.size()));
+}
   /**
    * Open up the photon vision camera streams on the localhost, assumes running photon vision on localhost.
    */

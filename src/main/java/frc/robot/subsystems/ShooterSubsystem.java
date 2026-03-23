@@ -89,6 +89,20 @@ public class ShooterSubsystem extends SubsystemBase {
         public void setduty(double dutyCycle) {
     shooter.set(dutyCycle);
 }
+  public double rpmForDistanceMeters(double distanceMeters) {
+  // EXAMPLE ONLY ACTUALLY TEST WITH REAL DATA TO FIND VALUES
+  if (distanceMeters <= 0.25) return 2000;
+  if (distanceMeters <= 0.5) return 2200;
+  if (distanceMeters <= 1.5) return 2800;
+  if (distanceMeters <= 2.0) return 3100;
+  if (distanceMeters <= 2.5) return 3400;
+  if (distanceMeters <= 3.0) return 3700;
+  if (distanceMeters <= 3.5) return 4000;
+  if (distanceMeters <= 4.0) return 4300;
+  if (distanceMeters <= 4.5) return 4600;
+  return 4600 + (distanceMeters - 4.5) * 600; // Linear increase after 4 meters
+
+}
 
   public ShooterSubsystem() {}
 

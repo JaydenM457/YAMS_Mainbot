@@ -5,6 +5,7 @@
 package frc.robot;
 
 
+import com.fasterxml.jackson.databind.util.Named;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
@@ -28,11 +29,13 @@ import frc.robot.Constants.AutonConstants;
 import frc.robot.Constants.COMMAND_TRAIN_CONSTANTS;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.COMMAND_TRAIN_CONSTANTS.SHOOTER_SPEED;
+import frc.robot.commands.AlignToHubAndShoot;
 import frc.robot.commands.AutoCommands;
 //import frc.robot.commands.AutoCommands;
 //import frc.robot.commands.AutoIntaking;
 import frc.robot.commands.AutoShoot;
 import frc.robot.commands.ShootIntoHub;
+import frc.robot.commands.ShootOnTheMoveAim;
 import frc.robot.commands.CommandTrain;
 import frc.robot.commands.ShootCommand;
 //import frc.robot.subsystems.ArmSubsystem;
@@ -43,6 +46,7 @@ import frc.robot.subsystems.ArmSubsystem;
 //import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.HopperSubsytem;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
+import frc.robot.subsystems.swervedrive.Vision;
 import frc.robot.subsystems.swervedrive.Vision.Cameras;
 
 import static edu.wpi.first.units.Units.RPM;
@@ -69,6 +73,7 @@ public class RobotContainer
   private final IntakeSubsystem m_intake = new IntakeSubsystem();
   private final ShooterSubsystem m_shooter = new ShooterSubsystem();
   private final HopperSubsytem m_Hopper = new HopperSubsytem();
+  
 
   // Systems (command factories)
   private final CommandTrain m_CommandTrain = new CommandTrain(
@@ -82,13 +87,7 @@ public class RobotContainer
   // private final Command armOscillateCommand = m_CommandTrain.armOscillate();
   private final Command armOscillateCommand = m_CommandTrain.armOscillate();
 
-    private final AutoCommands a_Commands = new AutoCommands(
-          m_arm,
-          m_indexer, 
-          m_intake,
-          m_shooter,
-          m_Hopper
-  );
+    
 
 //     public Command Shoot() {
 //     return m_CommandTrain.mixer()
@@ -127,8 +126,14 @@ public class RobotContainer
   // The robot's subsystems and commands are defined here...
   private final SwerveSubsystem       drivebase  = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
                                                                                 "swerve/maxSwerve"));
-
-
+  private final Vision                vision      = drivebase.getVision();
+  private final AutoCommands a_Commands = new AutoCommands(
+          m_arm,
+          m_indexer, 
+          m_intake,
+          m_shooter,
+          m_Hopper,
+          new AlignToHubAndShoot(drivebase, m_shooter, m_indexer, m_Hopper, null, null));
   private final Command aimAtHubCommand = drivebase.aimAtNearestTag(Cameras.LEFT_CAM, 
         new int[]{Constants.blueZoneHubLeftTagID,
           Constants.blueZoneHubRightTagID,
@@ -200,10 +205,10 @@ public class RobotContainer
   //mixer = m_CommandTrain.mixer();
 
   m_indexer.setDefaultCommand(m_indexer.set(0));
-      m_intake.setDefaultCommand(m_intake.set(0));
-    m_shooter.setDefaultCommand(m_shooter.set(0));
+  m_intake.setDefaultCommand(m_intake.set(0));
+  m_shooter.setDefaultCommand(m_shooter.set(.2));
     
-    m_Hopper.setDefaultCommand(m_Hopper.set(0));
+  m_Hopper.setDefaultCommand(m_Hopper.set(0));
     //m_arm.setDefaultCommand(m_arm.setAngle(Degrees.of(-40)));
 
     //arm.setDefaultCommand(arm.set(0));
@@ -217,8 +222,9 @@ public class RobotContainer
     DriverStation.silenceJoystickConnectionWarning(true);
     //NamedCommands.registerCommand("TimedShoot", m_CommandTrain.timedShoot());
     //NamedCommands.registerCommand("TimedIntaking", m_CommandTrain.timedIntaking());
-    NamedCommands.registerCommand("Shoot", a_Commands.shoot());
-    NamedCommands.registerCommand("Shoot", a_Commands.shoot_Corrner());
+    NamedCommands.registerCommand("Shoot", a_Commands.AlignToHubAndShoot());
+    NamedCommands.registerCommand("AlignToTagAndShoot", a_Commands.AlignToHubAndShoot());
+    NamedCommands.registerCommand("ShootCorner", a_Commands.shoot_Corrner());
     NamedCommands.registerCommand("Intake",  a_Commands.Auto_Intaking());
     NamedCommands.registerCommand("IntakeStop",  a_Commands.Auto_Intaking_STOP());
     NamedCommands.registerCommand("AutoDone", Commands.runOnce(() -> SmartDashboard.putBoolean("Auto Finished", true)));
@@ -260,9 +266,9 @@ public class RobotContainer
     m_operatorController.povUp().whileTrue(m_arm.setAngle(COMMAND_TRAIN_CONSTANTS.SAFE_ANGLE));
     m_operatorController.povDown().whileTrue(m_arm.setAngle(COMMAND_TRAIN_CONSTANTS.DOWN_ANGLE));
 
-     m_operatorController.square().whileTrue(m_CommandTrain.throwup());
+    m_operatorController.square().whileTrue(m_CommandTrain.throwup());
     m_operatorController.cross().onTrue(m_CommandTrain.mixer());
-
+    driverController.square().whileTrue(new AlignToHubAndShoot(drivebase, m_shooter, m_indexer, m_Hopper, (java.util.function.DoubleSupplier) driverController::getLeftX, (java.util.function.DoubleSupplier) driverController::getLeftY));
     driverController.cross().onTrue((Commands.runOnce(drivebase::zeroGyro)));
     // new Trigger(() -> 
     //     m_operatorController.L1().getAsBoolean() || 
@@ -382,11 +388,25 @@ public class RobotContainer
           drivebase.driveToPose(
               new Pose2d(new Translation2d(4, 4), Rotation2d.fromDegrees(0)))
                               );
-      driverController.create().whileTrue(Commands.none());
-      driverController.options().whileTrue(Commands.none());
-      //driverController.L1().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
-      driverController.R1().onTrue(Commands.none());
-    }
+      driverController.triangle().whileTrue(
+        new AlignToHubAndShoot(
+            drivebase,
+            m_shooter,
+            m_indexer,
+            m_Hopper,
+            () -> -driverController.getLeftY(),
+            () -> -driverController.getLeftX()));
+
+      driverController.cross().whileTrue(
+          new ShootOnTheMoveAim(
+              drivebase,
+              m_shooter,
+              m_indexer,
+              m_Hopper,
+              () -> -driverController.getLeftY(),
+              () -> -driverController.getLeftX()));
+            
+          }
 
   }
 
