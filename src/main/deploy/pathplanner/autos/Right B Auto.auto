@@ -5,18 +5,6 @@
     "data": {
       "commands": [
         {
-          "type": "path",
-          "data": {
-            "pathName": "B(1)"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Intake"
-          }
-        },
-        {
           "type": "named",
           "data": {
             "name": "ArmDown"
@@ -25,25 +13,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "B(2)"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "IntakeStop"
+            "pathName": "(B1)"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "B(3)"
+            "pathName": "(B2)"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "B(4)"
+            "pathName": "(B3)"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "(B4)"
           }
         },
         {

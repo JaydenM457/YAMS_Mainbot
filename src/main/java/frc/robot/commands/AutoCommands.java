@@ -26,7 +26,7 @@ public class AutoCommands {
     private AlignToHubAndShoot AlignToHubAndShoot;
 
     public AutoCommands(ArmSubsystem Arm, IndexerSubsystem Indexer, 
-        IntakeSubsystem Intake, ShooterSubsystem Shooter, HopperSubsytem Hopper, AlignToHubAndShoot alignToHubAndShoot) {
+        IntakeSubsystem Intake, ShooterSubsystem Shooter, HopperSubsytem Hopper, AlignToHubAndShoot alignToHubAndShoot){
         this.Arm = Arm;
         this.Indexer = Indexer;
         this.Intake = Intake;
@@ -71,10 +71,6 @@ public class AutoCommands {
             .alongWith(Hopper.set(-1))).withTimeout(6);
         
 
-    }
-    public Command AlignToHubAndShoot(){
-        return AlignToHubAndShoot;
-      
     }
     
 
