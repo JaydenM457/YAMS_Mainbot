@@ -469,20 +469,22 @@ public class SwerveSubsystem extends SubsystemBase
     }
     else {
       Pose2d closestAprilTagPose = aprilTagFieldLayout.getTagPose(aprilTagIDForEstimatedRotation).get().toPose2d();
-      Rotation2d closestAprilTagPoseRotation = closestAprilTagPose.getRotation();
+      Translation2d closestAprilTagPoseTranslation = closestAprilTagPose.getTranslation();
 
-      PIDController pid = new PIDController(
-              Constants.aprilTagAimingPID_kP * 0.85,
-              Constants.aprilTagAimingPID_kI, 
-              Constants.aprilTagAimingPID_kD);
+      Rotation2d robotToAprilTagRotation = closestAprilTagPoseTranslation.minus(robotPoseTranslation).getAngle();
 
-      pid.enableContinuousInput(-180, 180);
+      // PIDController pid = new PIDController(
+      //         Constants.aprilTagAimingPID_kP,
+      //         Constants.aprilTagAimingPID_kI, 
+      //         Constants.aprilTagAimingPID_kD);
 
-      double pidCalculation = pid.calculate(robotPoseRotation.getDegrees(), closestAprilTagPoseRotation.getDegrees());
+      // pid.enableContinuousInput(-Math.PI, Math.PI);
+
+      // double pidCalculation = pid.calculate(robotPoseRotation.getRadians(), robotToAprilTagRotation.getRadians());
       
-      double turnAngle = -pidCalculation;
+      // double turnAngle = -pidCalculation;
 
-      return Optional.of(Rotation2d.fromDegrees(turnAngle));
+      return Optional.of(robotToAprilTagRotation);
     }
     
     return Optional.empty();
