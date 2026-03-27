@@ -362,6 +362,7 @@ public class SwerveSubsystem extends SubsystemBase
         Optional<Rotation2d> estimatedRobotToAprilTagRotation = getEstimatedRobotToAprilTagRotation(aprilTagIDs);
 
         if (estimatedRobotToAprilTagRotation.isPresent()) {
+          SmartDashboard.putNumber("Aiming at AprilTag", aprilTagIDForEstimatedRotation);
           drive(getTargetSpeeds(0,
                               0,
                               estimatedRobotToAprilTagRotation.get()));
@@ -388,39 +389,25 @@ public class SwerveSubsystem extends SubsystemBase
           if (bestTarget != null) {
             if (bestTarget.getFiducialId() == nearestDesiredTargetID) {
               nearestDesiredTarget = bestTarget;
-              
-              PIDController pid = new PIDController(
-              Constants.aprilTagAimingPID_kP,
-              Constants.aprilTagAimingPID_kI, 
-              Constants.aprilTagAimingPID_kD);
 
-              pid.enableContinuousInput(-180, 180);
+              Pose2d robotPose = getSwerveDrive().getPose();
+              Rotation2d robotPoseRotation = robotPose.getRotation();
 
-              double pidCalculation = pid.calculate(swerveDrive.getYaw().getDegrees(), nearestDesiredTarget.getYaw());
-              
-              double turnAngle = -pidCalculation;
+              Rotation2d aprilTagFieldRotation = robotPoseRotation.minus(Rotation2d.fromDegrees(nearestDesiredTarget.getYaw()));
 
               SmartDashboard.putNumber("Aiming at AprilTag", nearestDesiredTarget.getFiducialId());
 
               drive(getTargetSpeeds(0,
                                   0,
-                                  Rotation2d.fromDegrees(turnAngle)));
+                                  aprilTagFieldRotation));
               
-              pid.close();
-
               return;
             }
             
           }
           
         }
-
-        
         }
-                
-          
-        
-
         if (nearestDesiredTarget == null) {
           drive(getTargetSpeeds(0,
                               0,
@@ -437,15 +424,14 @@ public class SwerveSubsystem extends SubsystemBase
   public Optional<Rotation2d> getEstimatedRobotToAprilTagRotation(int[] aprilTagIDs) {
     Pose2d robotPose = getSwerveDrive().getPose();
     Translation2d robotPoseTranslation = robotPose.getTranslation();
-    Rotation2d robotPoseRotation = robotPose.getRotation();
     Map<Integer, Double> aprilTagDistances = new HashMap<>();
 
     if (aprilTagIDForEstimatedRotation == -1) {
       for (int tagID: aprilTagIDs) {
-        Pose2d hubTagPose = aprilTagFieldLayout.getTagPose(tagID).get().toPose2d();
-        Translation2d hubTagPoseTranslation = hubTagPose.getTranslation();
+        Pose2d tagPose = aprilTagFieldLayout.getTagPose(tagID).get().toPose2d();
+        Translation2d tagPoseTranslation = tagPose.getTranslation();
 
-        double distanceFromRobotToTag = robotPoseTranslation.getDistance(hubTagPoseTranslation);
+        double distanceFromRobotToTag = robotPoseTranslation.getDistance(tagPoseTranslation);
         aprilTagDistances.put(tagID, distanceFromRobotToTag);
       }
 
@@ -472,17 +458,6 @@ public class SwerveSubsystem extends SubsystemBase
       Translation2d closestAprilTagPoseTranslation = closestAprilTagPose.getTranslation();
 
       Rotation2d robotToAprilTagRotation = closestAprilTagPoseTranslation.minus(robotPoseTranslation).getAngle();
-
-      // PIDController pid = new PIDController(
-      //         Constants.aprilTagAimingPID_kP,
-      //         Constants.aprilTagAimingPID_kI, 
-      //         Constants.aprilTagAimingPID_kD);
-
-      // pid.enableContinuousInput(-Math.PI, Math.PI);
-
-      // double pidCalculation = pid.calculate(robotPoseRotation.getRadians(), robotToAprilTagRotation.getRadians());
-      
-      // double turnAngle = -pidCalculation;
 
       return Optional.of(robotToAprilTagRotation);
     }
