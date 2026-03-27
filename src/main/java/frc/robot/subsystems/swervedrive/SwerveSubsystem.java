@@ -283,13 +283,13 @@ public class SwerveSubsystem extends SubsystemBase
           Pose2d robotPose = getSwerveDrive().getPose();
           Rotation2d robotPoseRotation = robotPose.getRotation();
 
-          Rotation2d aprilTagFieldRotation = robotPoseRotation.minus(Rotation2d.fromDegrees(desiredTarget.getYaw()));
+          Rotation2d robotToAprilTagRotation = robotPoseRotation.minus(Rotation2d.fromDegrees(desiredTarget.getYaw()));
 
           SmartDashboard.putNumber("Aiming at AprilTag", desiredTarget.getFiducialId());
 
           drive(getTargetSpeeds(0,
                               0,
-                              aprilTagFieldRotation));
+                              robotToAprilTagRotation));
         }
         else {
           drive(getTargetSpeeds(0,
@@ -399,13 +399,13 @@ public class SwerveSubsystem extends SubsystemBase
               Pose2d robotPose = getSwerveDrive().getPose();
               Rotation2d robotPoseRotation = robotPose.getRotation();
 
-              Rotation2d aprilTagFieldRotation = robotPoseRotation.minus(Rotation2d.fromDegrees(nearestDesiredTarget.getYaw()));
+              Rotation2d robotToAprilTagRotation = robotPoseRotation.minus(Rotation2d.fromDegrees(nearestDesiredTarget.getYaw()));
 
               SmartDashboard.putNumber("Aiming at AprilTag", nearestDesiredTarget.getFiducialId());
 
               drive(getTargetSpeeds(0,
                                   0,
-                                  aprilTagFieldRotation));
+                                  robotToAprilTagRotation));
               
               return;
             }
