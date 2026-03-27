@@ -258,6 +258,11 @@ public class SwerveSubsystem extends SubsystemBase
     CommandScheduler.getInstance().schedule(PathfindingCommand.warmupCommand());
   }
 
+
+  public void stop()
+  {
+    swerveDrive.setChassisSpeeds(new ChassisSpeeds());
+  }
   /**
    * Aim the robot at the specified target returned by PhotonVision.
    *
