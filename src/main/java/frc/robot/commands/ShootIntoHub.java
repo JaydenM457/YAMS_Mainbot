@@ -94,7 +94,7 @@ public class ShootIntoHub extends Command
 
       if (cameraInitialResult.isPresent()) {
         PhotonPipelineResult cameraResult = cameraInitialResult.get();
-        ArrayList<PhotonTrackedTarget> closestTargets = camera.getClosestTargets(cameraResult);
+        ArrayList<PhotonTrackedTarget> closestTargets = camera.getClosestTargets(cameraResult, swerveDrive.getVision());
 
         if (closestTargets == null) {
             return;

@@ -530,12 +530,32 @@ public class Vision
       return null;
     }
 
-    public ArrayList<PhotonTrackedTarget> getClosestTargets(PhotonPipelineResult result) {
+    public ArrayList<PhotonTrackedTarget> getClosestTargets(PhotonPipelineResult result, Vision vision) {
       if (result.hasTargets()) {
         List<PhotonTrackedTarget> targets = result.getTargets();
-        targets.sort(Comparator.comparing((target) -> target.getArea()));
+
+        // TODO: Filter the targets list of tags in the opposite alliance and simply return the targets sorted by their area.
+        // TODO: Add tag ambiguity filtering such that in two very similar tag areas, the one with the least ambiguity is prioritized.
+
+        targets.sort(Comparator.comparing((PhotonTrackedTarget target) -> target.getArea()));
         Collections.reverse(targets);
         
+        if (targets.size() >= 2) {
+          double tagsAreaDifference = Math.abs(targets.get(0).getArea() - targets.get(1).getArea());
+          double firstTagDistance = vision.getDistanceFromAprilTag(targets.get(0).getFiducialId());
+          double secondTagDistance = vision.getDistanceFromAprilTag(targets.get(1).getFiducialId());
+
+          double areaDifferenceThreshold = targets.get(0).getArea() * 0.05;
+
+          // If the difference between the top two tags' area is less than 5% of the top one and the second tag is closer,
+          // then swap the first tag in the closest targets list with the second one.
+          if (tagsAreaDifference < areaDifferenceThreshold && secondTagDistance < firstTagDistance) {
+            PhotonTrackedTarget tempTarget = targets.get(0);
+            targets.set(0, targets.get(1));
+            targets.set(1, tempTarget);
+          }
+        }
+
         if (targets.size() >= 3) {
           return new ArrayList<PhotonTrackedTarget>(targets.subList(0, 3));
         }
@@ -553,7 +573,7 @@ public class Vision
       {
         var result = resultO.get();
 
-        ArrayList<PhotonTrackedTarget> closestTargets = LEFT_CAM.getClosestTargets(result); // Returns the top three closest targets or null if not found
+        ArrayList<PhotonTrackedTarget> closestTargets = LEFT_CAM.getClosestTargets(result, vision); // Returns the top three closest targets or null if not found
 
         if (closestTargets == null) {
           return -1.0;

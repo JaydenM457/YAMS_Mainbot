@@ -337,7 +337,7 @@ public class SwerveSubsystem extends SubsystemBase
       {
         var result = resultO.get();
 
-        ArrayList<PhotonTrackedTarget> closestTargets = camera.getClosestTargets(result); // Returns the top three closest targets or null if not found
+        ArrayList<PhotonTrackedTarget> closestTargets = camera.getClosestTargets(result, getVision()); // Returns the top three closest targets or null if not found
 
         if (closestTargets == null) {
           return;
@@ -385,7 +385,7 @@ public class SwerveSubsystem extends SubsystemBase
       {
         var result = resultO.get();
 
-        ArrayList<PhotonTrackedTarget> closestTargets = camera.getClosestTargets(result); // Returns the top two best targets or null if not found
+        ArrayList<PhotonTrackedTarget> closestTargets = camera.getClosestTargets(result, getVision()); // Returns the top two best targets or null if not found
 
         if (closestTargets == null) {
           return;
