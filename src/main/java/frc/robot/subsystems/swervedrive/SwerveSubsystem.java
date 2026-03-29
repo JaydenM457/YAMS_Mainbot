@@ -364,7 +364,9 @@ public class SwerveSubsystem extends SubsystemBase
           }
         }
 
-        // If none of the closest targets are hub AprilTags, then estimate the rotation needed to turn toward an AprilTag
+      }
+
+       // If there's no result with AprilTags or none of the closest targets are hub AprilTags, then estimate the rotation needed to turn toward an AprilTag
         Optional<Rotation2d> estimatedRobotToAprilTagRotation = getEstimatedRobotToAprilTagRotation(aprilTagIDs);
 
         if (estimatedRobotToAprilTagRotation.isPresent()) {
@@ -374,8 +376,6 @@ public class SwerveSubsystem extends SubsystemBase
                               estimatedRobotToAprilTagRotation.get()));
               
         }
-
-      }
 
     }).until(() -> nearestDesiredTargetID != -1)
     .andThen(run(() -> {
