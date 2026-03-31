@@ -152,10 +152,12 @@ public class Vision
       Optional<EstimatedRobotPose> poseEst = getEstimatedGlobalPose(camera);
       if (poseEst.isPresent())
       {
+        System.out.println("I EXIST SHIT!");
         var pose = poseEst.get();
+        swerveDrive.field.getObject("Vision").setPose(pose.estimatedPose.toPose2d());
         swerveDrive.addVisionMeasurement(pose.estimatedPose.toPose2d(),
-                                         pose.timestampSeconds,
-                                         camera.curStdDevs);
+                                         pose.timestampSeconds
+);
       }
     }
 
@@ -636,8 +638,7 @@ public class Vision
       {
         mostRecentTimestamp = Math.max(mostRecentTimestamp, result.getTimestampSeconds());
       }
-      if ((resultsList.isEmpty() || (currentTimestamp - mostRecentTimestamp >= debounceTime)) &&
-          (currentTimestamp - lastReadTimestamp) >= debounceTime)
+      if (true)
       {
         resultsList = Robot.isReal() ? camera.getAllUnreadResults() : cameraSim.getCamera().getAllUnreadResults();
         lastReadTimestamp = currentTimestamp;
@@ -665,10 +666,10 @@ public class Vision
     private void updateEstimatedGlobalPose()
     {
       Optional<EstimatedRobotPose> visionEst = Optional.empty();
-      for (var change : resultsList)
+      for (var change : camera.getAllUnreadResults())
       {
         visionEst = poseEstimator.estimateCoprocMultiTagPose(change);
-
+        // System.out.println(visionEst.get().estimatedPose.toPose2d());
         if (visionEst.isEmpty()) {
           visionEst = poseEstimator.estimateLowestAmbiguityPose(change);
         }
