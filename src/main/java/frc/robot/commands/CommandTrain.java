@@ -27,7 +27,9 @@ public class CommandTrain {
 
     public CommandTrain(ArmSubsystem Arm,
      IndexerSubsystem Indexer, 
-        IntakeSubsystem Intake, ShooterSubsystem Shooter, HopperSubsytem Hopper){
+        IntakeSubsystem Intake, 
+        ShooterSubsystem Shooter, 
+        HopperSubsytem Hopper){
         this.Arm = Arm;
         this.Indexer = Indexer;
         this.Intake = Intake;

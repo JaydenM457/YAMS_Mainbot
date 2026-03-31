@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -190,30 +191,34 @@ public class RobotContainer
     m_operatorController.R2().whileTrue(new ShootCommand(() -> SHOOTER_SPEED.SIDE_TRENCH_VELOCITY,  
                                                               m_shooter, 
                                                               m_indexer, 
+                                                              m_Hopper,
                                                               m_intake, 
-                                                              armOscillateCommand, 
-                                                              PULSE));
+                                                              armOscillateCommand
+                                                              ));
 
     m_operatorController.L2().whileTrue(new ShootCommand(() -> SHOOTER_SPEED.CORRNER_VELOCITY,  
                                                               m_shooter, 
                                                               m_indexer, 
+                                                              m_Hopper,
                                                               m_intake, 
-                                                              armOscillateCommand, 
-                                                              PULSE));
+                                                              armOscillateCommand
+                                                              ));
 
     m_operatorController.R1().whileTrue(new ShootCommand(() -> SHOOTER_SPEED.SHORTER_VELOCITY,  
                                                               m_shooter, 
                                                               m_indexer, 
+                                                              m_Hopper,
                                                               m_intake, 
-                                                              armOscillateCommand, 
-                                                              PULSE));
+                                                              armOscillateCommand
+                                                              ));
     
     m_operatorController.L1().whileTrue(new ShootCommand(() -> SHOOTER_SPEED.FAR_VELOCITY,  
                                                               m_shooter, 
                                                               m_indexer, 
+                                                              m_Hopper,
                                                               m_intake, 
-                                                              armOscillateCommand, 
-                                                              PULSE));
+                                                              armOscillateCommand
+                                                              ));
 
     m_operatorController.L1().onFalse(m_CommandTrain.mixer());
     m_operatorController.L2().onFalse(m_CommandTrain.mixer());
@@ -221,16 +226,17 @@ public class RobotContainer
     m_operatorController.R2().onFalse(m_CommandTrain.mixer());
 
     m_operatorController.triangle().whileTrue(m_CommandTrain.Intaking());
-    
+    m_operatorController.square().whileTrue(m_CommandTrain.throwup());
+
     m_operatorController.povUp().whileTrue(m_arm.setAngle(COMMAND_TRAIN_CONSTANTS.SAFE_ANGLE));
     m_operatorController.povDown().whileTrue(m_arm.setAngle(COMMAND_TRAIN_CONSTANTS.DOWN_ANGLE));
 
-    m_operatorController.square().whileTrue(m_CommandTrain.throwup());
-
-
-
     driverController.cross().onTrue((Commands.runOnce(drivebase::zeroGyro)));
 
+
+    // m_operatorController.button(1).onTrue( new AutoShoot(() -> SHOOTER_SPEED.CORRNER_VELOCITY,  
+    // m_shooter, m_indexer, m_Hopper, 
+    // m_intake,  5));
 
 
     // m_operatorController.povLeft().whileTrue( m_CommandTrain.PULSE());
