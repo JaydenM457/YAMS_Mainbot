@@ -412,9 +412,9 @@ public class SwerveSubsystem extends SubsystemBase
 
               Translation2d robotToTagTranslation = cameraToTagTranslation.plus(robotToCameraTranslation);
 
-              Rotation2d robotToAprilTagRotationWithOffset =  robotPoseRotation.plus(robotToTagTranslation.getAngle());
+              Rotation2d robotToAprilTagRotationWithOffset =  robotToTagTranslation.rotateBy(robotPoseRotation).getAngle();
 
-              // Rotation2d robotToAprilTagRotation = robotPoseRotation.minus(Rotation2d.fromDegrees(nearestDesiredTarget.getYaw()));
+              // Rotation2d robotToAprilTagRotationWithOffset =  robotPoseRotation.plus(robotToTagTranslation.getAngle());
 
               SmartDashboard.putNumber("Aiming at AprilTag", nearestDesiredTarget.getFiducialId());
 
