@@ -290,11 +290,12 @@ public class SwerveSubsystem extends SubsystemBase
           Transform3d cameraToTagTransform = desiredTarget.getBestCameraToTarget();
 
           Translation2d robotToCameraTranslation = robotToCameraTransform.getTranslation().toTranslation2d();
-          Translation2d cameraToTagTranslation = cameraToTagTransform.getTranslation().toTranslation2d();
+          Translation2d cameraToTagTranslation = cameraToTagTransform.getTranslation().toTranslation2d()
+                                                  .rotateBy(robotToCameraTransform.getRotation().toRotation2d());
 
           Translation2d robotToTagTranslation = cameraToTagTranslation.plus(robotToCameraTranslation);
 
-          Rotation2d robotToAprilTagRotationWithOffset =  robotPoseRotation.plus(robotToTagTranslation.getAngle());
+          Rotation2d robotToAprilTagRotationWithOffset =  robotToTagTranslation.rotateBy(robotPoseRotation).getAngle();
 
           SmartDashboard.putNumber("Aiming at AprilTag", desiredTarget.getFiducialId());
 
@@ -414,8 +415,6 @@ public class SwerveSubsystem extends SubsystemBase
 
               Rotation2d robotToAprilTagRotationWithOffset =  robotToTagTranslation.rotateBy(robotPoseRotation).getAngle();
 
-              // Rotation2d robotToAprilTagRotationWithOffset =  robotPoseRotation.plus(robotToTagTranslation.getAngle());
-
               SmartDashboard.putNumber("Aiming at AprilTag", nearestDesiredTarget.getFiducialId());
 
               drive(getTargetSpeeds(0,
@@ -481,30 +480,6 @@ public class SwerveSubsystem extends SubsystemBase
     Rotation2d robotToAprilTagRotation = closestAprilTagPoseTranslation.minus(robotPoseTranslation).getAngle();
 
     return Optional.of(robotToAprilTagRotation);
-  }
-
-  /**
-   * Aim the robot at the target returned by PhotonVision.
-   *
-   * @return A {@link Command} which will run the alignment.
-   */
-  public Command aimAtTarget(Cameras camera)
-  {
-
-    return run(() -> {
-      Optional<PhotonPipelineResult> resultO = camera.getBestResult();
-      if (resultO.isPresent())
-      {
-        var result = resultO.get();
-        if (result.hasTargets())
-        {
-          drive(getTargetSpeeds(0,
-                                0,
-                                Rotation2d.fromDegrees(result.getBestTarget()
-                                                             .getYaw()))); // Not sure if this will work, more math may be required.
-        }
-      }
-    });
   }
 
   /**

@@ -152,16 +152,15 @@ public class Vision
       Optional<EstimatedRobotPose> poseEst = getEstimatedGlobalPose(camera);
       if (poseEst.isPresent())
       {
-        System.out.println("I EXIST SHIT!");
         var pose = poseEst.get();
         swerveDrive.field.getObject("Vision").setPose(pose.estimatedPose.toPose2d());
         swerveDrive.addVisionMeasurement(pose.estimatedPose.toPose2d(),
                                          pose.timestampSeconds
 );
       }
-      else {
-        System.out.println("NOT seeing any poses");
-      }
+      // else {
+      //   System.out.println("NOT seeing any poses.");
+      // }
     }
 
   }
@@ -493,10 +492,9 @@ public class Vision
         Optional<EstimatedRobotPose> estimatedPose = poseEstimator.estimateCoprocMultiTagPose(result);
 
         if (estimatedPose.isEmpty()) {
-          System.out.println("Multitag pose empty");
           estimatedPose = poseEstimator.estimateLowestAmbiguityPose(result);
         }
-        System.out.println("multi tag pose sent to updateestimationstddevs");
+
         updateEstimationStdDevs(estimatedPose, result.getTargets());
 
         estimatedRobotPose = estimatedPose;
