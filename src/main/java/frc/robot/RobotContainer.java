@@ -87,7 +87,7 @@ public class RobotContainer
   private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
                                                                          "swerve/maxSwerve"));
 
-  /*
+
   private final Command aimAtHubCommand = drivebase.aimAtNearestTag(Cameras.LEFT_CAM, 
         new int[]{Constants.blueZoneHubLeftTagID,
           Constants.blueZoneHubRightTagID,
@@ -100,7 +100,6 @@ public class RobotContainer
         }
       );
 
-   */
   // private final Command shootIntoHubCommand = new ShootIntoHub(Cameras.LEFT_CAM, new int[]{Constants.blueZoneHubLeftTagID,
   //         Constants.blueZoneHubRightTagID,
   //         Constants.redZoneHubLeftTagID,
@@ -196,9 +195,9 @@ public class RobotContainer
     autChooser = AutoBuilder.buildAutoChooser("MiddleAuto");
     NamedCommands.registerCommand("Aim at Target Command", aimAtTargetAutoCommand);
     autChooser.addOption("Aim at Target Command", aimAtTargetAutoCommand);
-
+    autChooser.addOption("Auto Aiming", new AutoAimCommand(drivebase, driveAngularVelocity));
     // autChooser.addOption("Test_One PathPlanner Command", drivebase.getAutonomousCommand("Test_One"));
-//    autChooser.addOption("Aim at Hub", aimAtHubCommand);
+    autChooser.addOption("Aim at Hub", aimAtHubCommand);
 
     // autChooser.addOption("Scoring Position Path", drivebase.getAutonomousCommand("ScoringPosition"));
     SmartDashboard.putData("Auto Chooser", autChooser);
