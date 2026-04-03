@@ -350,9 +350,9 @@ public class Vision
      * Left Camera
      */
     LEFT_CAM("left_camera",
-             new Rotation3d(0, Units.degreesToRadians(-22.5), 0),
-             new Translation3d(Units.inchesToMeters(10),
-                                Units.inchesToMeters(12),
+             new Rotation3d(0, Units.degreesToRadians(-22.5), Units.degreesToRadians(180)),
+             new Translation3d(Units.inchesToMeters(-10),
+                                Units.inchesToMeters(-12),
                                 Units.inchesToMeters(15.5)),
              VecBuilder.fill(4, 4, 8), VecBuilder.fill(0.5, 0.5, 1));
 
